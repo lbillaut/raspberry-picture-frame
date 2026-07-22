@@ -1,5 +1,6 @@
 from image_manager import ImageManager
 from slideshow import Slideshow
+from drivesync import DriveSync
 import pygame
 from settings import *
 from pathlib import Path
@@ -9,6 +10,11 @@ pygame.init()
 running = True
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+drivesync  = DriveSync("shared_folder", "images")
+credentials = drivesync.authenticate()
+
+print("Authenticated?")
 
 img_manager = ImageManager(IMAGE_FOLDER)
 slideshow = Slideshow(screen)
@@ -29,36 +35,3 @@ while running:
             running = False
 
 pygame.quit()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# image_path = Path("images") / "red_rockpng.png"
-# image = pygame.image.load(image_path)
-# image = pygame.transform.scale(image, (WIDTH, HEIGHT))
-
-# screen.blit(image, (0,0))
-
-# pygame.display.flip()
-
-# running = True
-
-# while running:
-#     for event in pygame.event.get():
-#         if event.type == pygame.QUIT:
-#             running = False
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_ESCAPE:
-#                 running = False
-
-# pygame.quit()
