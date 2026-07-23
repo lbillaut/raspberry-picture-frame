@@ -5,6 +5,7 @@ import pygame
 from settings import *
 from pathlib import Path
 
+
 pygame.init()
 
 running = True
@@ -12,9 +13,7 @@ running = True
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
 drivesync  = DriveSync("shared_folder", "images")
-credentials = drivesync.authenticate()
-
-print("Authenticated?")
+drivesync.sync_to_drive()
 
 img_manager = ImageManager(IMAGE_FOLDER)
 slideshow = Slideshow(screen)
