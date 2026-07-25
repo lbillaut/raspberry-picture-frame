@@ -5,31 +5,25 @@ from googleapiclient.discovery import build
 from google.oauth2.credentials import Credentials
 from googleapiclient.http import MediaIoBaseDownload
 from settings import *
+import time
 
 SCOPES = ["https://www.googleapis.com/auth/drive.readonly"]
 
 class DriveSync:
-    def __init__(self, source, destination):
-        self.source_path = Path(source) # not necessary
+    def __init__(self, destination):
         self.destination_path = Path(destination)
         self.drive_service = None
 
-    def sync_local(self): # Compare source folder files and destination folder files and copy any missing files
-        source_file_name_set = {file.name for file in self.source_path.iterdir() if file.is_file()}
-        destination_file_name_set = {file.name for file in self.destination_path.iterdir() if file.is_file()}
-        missing_files = source_file_name_set - destination_file_name_set
-        for file_name in missing_files:
-            file_path = self.source_path / file_name
-            shutil.copy(file_path, self.destination_path)
-
     def sync_to_drive(self): # Compare drive folder files and destination folder files and download any missing files
         self.authenticate()
-        print("Authenticated")
+        print("Authentication Successful")        
         missing_files = self.find_missing_files()
-        for file in missing_files:
+        for index, file in enumerate(missing_files):
             self.download_file(file['id'], file['name'])
+            print(f"Updating {index}/{len(missing_files)} files/")
     
     def authenticate(self): # Authenticate with Google Drive and return OAuth credentials
+        print("Authenticating...")
         if self.drive_service is None:
             if self.token_exists():
                 credentials = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
@@ -41,10 +35,10 @@ class DriveSync:
             self.drive_service = build(SERVICE, API_VERSION, credentials=credentials)
         return self.drive_service
     
-    def token_exists(self):
+    def token_exists(self): # Verify that authentication already exists so credentials don't need to be generated every time. 
         return Path(TOKEN_FILE).exists() 
     
-    def download_file(self, file_id, file_name):
+    def download_file(self, file_id, file_name): # Download file from drive to local hard drive
         request = self.drive_service.files().get_media(fileId = file_id)
         destination = self.destination_path / file_name
         with open(destination, "wb") as file:
@@ -53,12 +47,25 @@ class DriveSync:
             while not done:
                 status, done = downloader.next_chunk()
 
-    def find_missing_files(self):
+    def find_missing_files(self): # List the files that are in google drive but not on hard drive
+        print("Comparing local photos to drive")
+        start = time.perf_counter()
         results = self.drive_service.files().list(
             q=f"'{FOLDER_ID}' in parents and trashed = false",
             fields="nextPageToken, files(id, name, mimeType)"
         ).execute()
+
+        print(f"Google query: {time.perf_counter()-start:.3f}s")
+        start = time.perf_counter()
+
         files = results.get('files', [])
+
+        print(f"Extract files: {time.perf_counter()-start:.6f}s")
+        start = time.perf_counter()
+
         destination_file_name_set = {file.name for file in self.destination_path.iterdir() if file.is_file()}
         missing_files = [file for file in files if file['name'] not in destination_file_name_set]
+        
+        print(f"Comparison: {time.perf_counter()-start:.6f}s")
+
         return missing_files

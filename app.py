@@ -5,27 +5,24 @@ import pygame
 from settings import *
 from pathlib import Path
 
-
 pygame.init()
-
-running = True
-
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 
-drivesync  = DriveSync("shared_folder", "images")
+drivesync  = DriveSync("images")
 drivesync.sync_to_drive()
 
 img_manager = ImageManager(IMAGE_FOLDER)
 slideshow = Slideshow(screen)
 
 slideshow.display(img_manager.current_image())
-
 start_time = pygame.time.get_ticks()
-
+running = True
 while running:
     current_time = pygame.time.get_ticks()
     if current_time - start_time > 5000: 
         slideshow.display(img_manager.next_image())
+        drivesync.sync_to_drive()
+        img_manager.load_images() # should load images be in sync? spend some time organizing code. 
         start_time = current_time
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

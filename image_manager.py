@@ -26,5 +26,5 @@ class ImageManager:
     
     def next_image(self):
         self.current_index += 1
-        self.current_index = (self.current_index + 1) % len(self.images)
+        self.current_index = (self.current_index) % len(self.images)
         return self.current_image()
