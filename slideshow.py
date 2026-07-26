@@ -39,14 +39,22 @@ class Slideshow:
         # 1. Open the image with Pillow
         with Image.open(filename) as img:
             # 2. Automatically check EXIF and correct orientation
+            t = time.perf_counter()
+            print(f"open: {t-start:.3f}s")
             img = ImageOps.exif_transpose(img)
+            print(f"transpose: {time.perf_counter()-t:.3f}s")
+            t = time.perf_counter()
             # 3. Scale to screen
             img.thumbnail((self.screen.get_width(), self.screen.get_height()))
+            print(f"thumbnail: {time.perf_counter()-t:.3f}s")
+            t = time.perf_counter()
             # 4. Convert the Pillow image data to a format Pygame understands
             image_bytes = img.tobytes()
+            print(f"tobytes: {time.perf_counter()-t:.3f}s")
+            t = time.perf_counter()
             image_size = img.size
             image_mode = img.mode # Usually 'RGB' or 'RGBA'
             
             self.next_surface = pygame.image.fromstring(image_bytes, image_size, image_mode)
-        print(f"load_next_surface: {time.perf_counter()-start:.3f}s")
+            print(f"fromstring: {time.perf_counter()-t:.3f}s")
 
