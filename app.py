@@ -14,14 +14,18 @@ drivesync.sync_to_drive()
 img_manager = ImageManager(IMAGE_FOLDER)
 slideshow = Slideshow(screen)
 
-slideshow.display(img_manager.current_image())
+slideshow.load_next_surface(img_manager.current_image())
+slideshow.display()
+slideshow.load_next_surface(img_manager.next_image())
+
 image_timer = pygame.time.get_ticks()
 poll_timer = image_timer
 running = True
 while running:
     current_time = pygame.time.get_ticks()
     if current_time - image_timer > IMAGE_TIME: 
-        slideshow.display(img_manager.next_image())
+        slideshow.display()
+        slideshow.load_next_surface(img_manager.next_image())
         image_timer = current_time
     if current_time - poll_timer > POLL_TIME:
         drivesync.sync_to_drive()

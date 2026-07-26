@@ -1,19 +1,20 @@
 import pygame
 from settings import *
 from PIL import Image, ImageOps
+import time
 
 class Slideshow:
     def __init__(self, screen):
         self.screen = screen
+        self.current_surface = None
+        self.next_surface = None
     
-    def display(self, image_path):
+    def display(self):
         self.screen.fill(BACKGROUND_RGB)    
-        image = pygame.image.load(image_path)
-        # image = self.auto_rotated_image(image_path)
-        scaled_image = self.scale_image(image)
-        center_x = (self.screen.get_width() - scaled_image.get_width())/2
-        center_y = (self.screen.get_height() - scaled_image.get_height())/2
-        self.screen.blit(scaled_image, (center_x, center_y)) 
+        self.current_surface = self.next_surface
+        center_x = (self.screen.get_width() - self.current_surface.get_width())/2
+        center_y = (self.screen.get_height() - self.current_surface.get_height())/2
+        self.screen.blit(self.current_surface, (center_x, center_y)) 
         pygame.display.flip()
 
     def scale_image(self, image):
@@ -31,18 +32,21 @@ class Slideshow:
         scaled_image = pygame.transform.scale(image, (int(new_img_width), int(new_img_height)))
         return scaled_image
     
-    def auto_rotated_image(self, filename):
+    def load_next_surface(self, filename):
+        start = time.perf_counter()
         """Loads an image, automatically fixes its EXIF orientation, 
         and returns a Pygame surface."""
         # 1. Open the image with Pillow
         with Image.open(filename) as img:
             # 2. Automatically check EXIF and correct orientation
             img = ImageOps.exif_transpose(img)
-            
-            # 3. Convert the Pillow image data to a format Pygame understands
+            # 3. Scale to screen
+            img.thumbnail((self.screen.get_width(), self.screen.get_height()))
+            # 4. Convert the Pillow image data to a format Pygame understands
             image_bytes = img.tobytes()
             image_size = img.size
             image_mode = img.mode # Usually 'RGB' or 'RGBA'
             
-            return pygame.image.fromstring(image_bytes, image_size, image_mode)
+            self.next_surface = pygame.image.fromstring(image_bytes, image_size, image_mode)
+        print(f"load_next_surface: {time.perf_counter()-start:.3f}s")
 
