@@ -9,8 +9,8 @@ class Slideshow:
     def display(self, image_path):
         self.screen.fill(BACKGROUND_RGB)    
         image = pygame.image.load(image_path)
-        rotated_image = self.auto_rotated_image(image_path)
-        scaled_image = self.scale_image(rotated_image)
+        # image = self.auto_rotated_image(image_path)
+        scaled_image = self.scale_image(image)
         center_x = (self.screen.get_width() - scaled_image.get_width())/2
         center_y = (self.screen.get_height() - scaled_image.get_height())/2
         self.screen.blit(scaled_image, (center_x, center_y)) 
