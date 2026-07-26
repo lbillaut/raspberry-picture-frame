@@ -6,7 +6,7 @@ from settings import *
 from pathlib import Path
 
 pygame.init()
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 drivesync  = DriveSync("images")
 drivesync.sync_to_drive()

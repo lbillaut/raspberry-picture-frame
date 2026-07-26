@@ -1,6 +1,6 @@
 # Window Settings
-WIDTH = 1280
-HEIGHT = 720
+WIDTH = 1280 # not used anymore
+HEIGHT = 720 # not used anymore
 WINDOW_TITLE = "Picture Frame"
 BACKGROUND_RGB = (0,0,0)
 
