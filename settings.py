@@ -7,6 +7,8 @@ BACKGROUND_RGB = (0,0,0)
 # Slideshow settings
 DISPLAY_TIME_MS = 5000
 DISPLAY_MODE = "SIMPLE" # add collage display mode
+IMAGE_TIME = 5000 # 5 seconds
+POLL_TIME = 10000 # 10 seconds
 
 # Images
 IMAGE_FOLDER = "images"
