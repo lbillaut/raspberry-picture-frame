@@ -43,6 +43,7 @@ class Slideshow:
             print(f"open: {t-start:.3f}s")
             img.draft("RGB", (self.screen.get_width(), self.screen.get_height()))
             img = ImageOps.exif_transpose(img)
+            img = img.transpose(Image.Transpose.ROTATE_90)
             print(f"transpose: {time.perf_counter()-t:.3f}s")
             t = time.perf_counter()
             # 3. Scale to screen
