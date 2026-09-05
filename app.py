@@ -49,6 +49,7 @@ import threading
 
 
 pygame.init()
+pygame.mouse.set_visible(False)
 screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
 
 drivesync = DriveSync("images")
